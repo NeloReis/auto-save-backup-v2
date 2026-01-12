@@ -1,0 +1,92 @@
+{
+  "name": "auto-backup",
+  "displayName": "Auto Backup",
+  "description": "Automatic cloud backup with version history. Works like Google Sheets autosave.",
+  "version": "1.0.0",
+  "publisher": "your-publisher-name",
+  "repository": "https://github.com/your-username/vscode-auto-backup",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "autoBackup.openMenu",
+        "title": "Auto Backup: Open Menu"
+      }
+    ],
+    "configuration": {
+      "title": "Auto Backup",
+      "properties": {
+        "autoBackup.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic backup and versioning"
+        },
+        "autoBackup.versionInterval": {
+          "type": "number",
+          "default": 30000,
+          "minimum": 5000,
+          "maximum": 300000,
+          "description": "Time in milliseconds after last change before saving a version (default: 30 seconds)"
+        },
+        "autoBackup.cloudInterval": {
+          "type": "number",
+          "default": 300000,
+          "enum": [60000, 300000, 600000, 1800000],
+          "enumDescriptions": ["1 minute", "5 minutes", "10 minutes", "30 minutes"],
+          "description": "Interval between automatic cloud syncs"
+        },
+        "autoBackup.syncMode": {
+          "type": "string",
+          "default": "auto",
+          "enum": ["auto", "manual"],
+          "enumDescriptions": [
+            "Automatic: versions and syncs happen automatically",
+            "Manual: versions saved locally, sync only when you click 'Sync now'"
+          ],
+          "description": "Sync mode"
+        },
+        "autoBackup.ignorePatterns": {
+          "type": "array",
+          "default": [
+            "node_modules/**",
+            ".env",
+            ".git/**",
+            "*.tmp",
+            ".DS_Store",
+            "*.log"
+          ],
+          "description": "File patterns to exclude from backup (glob patterns)",
+          "items": { "type": "string" }
+        },
+        "autoBackup.logLevel": {
+          "type": "string",
+          "default": "warn",
+          "enum": ["debug", "info", "warn", "error"],
+          "description": "Activity log detail level"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.40.0",
+    "typescript": "^5.1.0"
+  },
+  "dependencies": {
+    "minimatch": "^9.0.3"
+  }
+}

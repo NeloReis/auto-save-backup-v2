@@ -12,6 +12,7 @@ export class AutoBackupManager {
     private onlineCheckTimer: NodeJS.Timeout | null = null;
     private isOnline = true;
     private fileWatcherDisposable: vscode.Disposable | null = null;
+    private fileSystemWatcher: vscode.FileSystemWatcher | null = null;
     private configChangeDisposable: vscode.Disposable | null = null;
     
     constructor(
@@ -41,6 +42,7 @@ export class AutoBackupManager {
     }
     
     private startFileWatcher(): void {
+        // Watch text document changes
         this.fileWatcherDisposable = vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) => {
             if (this.shouldIgnore(event.document.uri.fsPath)) {
                 return;
@@ -51,6 +53,29 @@ export class AutoBackupManager {
             }
             
             this.resetVersionDebounce();
+        });
+        
+        // Watch ALL file changes (including binary files)
+        const pattern = new vscode.RelativePattern(this.git.workspaceRootPath, '**/*');
+        this.fileSystemWatcher = vscode.workspace.createFileSystemWatcher(pattern);
+        
+        // Watch for file creation, changes, and deletion
+        this.fileSystemWatcher.onDidCreate((uri) => {
+            if (!this.shouldIgnore(uri.fsPath)) {
+                this.resetVersionDebounce();
+            }
+        });
+        
+        this.fileSystemWatcher.onDidChange((uri) => {
+            if (!this.shouldIgnore(uri.fsPath)) {
+                this.resetVersionDebounce();
+            }
+        });
+        
+        this.fileSystemWatcher.onDidDelete((uri) => {
+            if (!this.shouldIgnore(uri.fsPath)) {
+                this.resetVersionDebounce();
+            }
         });
     }
     
@@ -225,6 +250,9 @@ export class AutoBackupManager {
         }
         if (this.fileWatcherDisposable) {
             this.fileWatcherDisposable.dispose();
+        }
+        if (this.fileSystemWatcher) {
+            this.fileSystemWatcher.dispose();
         }
         if (this.configChangeDisposable) {
             this.configChangeDisposable.dispose();

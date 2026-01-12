@@ -48,6 +48,7 @@ class AutoBackupManager {
         this.onlineCheckTimer = null;
         this.isOnline = true;
         this.fileWatcherDisposable = null;
+        this.fileSystemWatcher = null;
         this.configChangeDisposable = null;
     }
     async start() {
@@ -65,6 +66,7 @@ class AutoBackupManager {
         this.updateStatus();
     }
     startFileWatcher() {
+        // Watch text document changes
         this.fileWatcherDisposable = vscode.workspace.onDidChangeTextDocument((event) => {
             if (this.shouldIgnore(event.document.uri.fsPath)) {
                 return;
@@ -73,6 +75,25 @@ class AutoBackupManager {
                 return;
             }
             this.resetVersionDebounce();
+        });
+        // Watch ALL file changes (including binary files)
+        const pattern = new vscode.RelativePattern(this.git.workspaceRootPath, '**/*');
+        this.fileSystemWatcher = vscode.workspace.createFileSystemWatcher(pattern);
+        // Watch for file creation, changes, and deletion
+        this.fileSystemWatcher.onDidCreate((uri) => {
+            if (!this.shouldIgnore(uri.fsPath)) {
+                this.resetVersionDebounce();
+            }
+        });
+        this.fileSystemWatcher.onDidChange((uri) => {
+            if (!this.shouldIgnore(uri.fsPath)) {
+                this.resetVersionDebounce();
+            }
+        });
+        this.fileSystemWatcher.onDidDelete((uri) => {
+            if (!this.shouldIgnore(uri.fsPath)) {
+                this.resetVersionDebounce();
+            }
         });
     }
     resetVersionDebounce() {
@@ -223,6 +244,9 @@ class AutoBackupManager {
         }
         if (this.fileWatcherDisposable) {
             this.fileWatcherDisposable.dispose();
+        }
+        if (this.fileSystemWatcher) {
+            this.fileSystemWatcher.dispose();
         }
         if (this.configChangeDisposable) {
             this.configChangeDisposable.dispose();

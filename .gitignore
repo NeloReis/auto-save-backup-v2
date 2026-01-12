@@ -1,2 +1,3 @@
 node_modules
 .vscode/auto-backup.log
+.vscode/settings.json

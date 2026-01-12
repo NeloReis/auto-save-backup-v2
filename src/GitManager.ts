@@ -85,6 +85,24 @@ export class GitManager {
         }
     }
     
+    async hasChanges(): Promise<boolean> {
+        try {
+            const output = await this.run('git status --porcelain');
+            return output.trim().length > 0;
+        } catch (error) {
+            return false;
+        }
+    }
+    
+    async hasCommitsToSync(): Promise<boolean> {
+        try {
+            const output = await this.run('git log origin/main..HEAD --oneline');
+            return output.trim().length > 0;
+        } catch (error) {
+            return false;
+        }
+    }
+    
     async saveVersion(): Promise<boolean> {
         try {
             await this.run('git add .');

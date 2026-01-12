@@ -46,6 +46,22 @@ class Logger {
         }
         this.logFile = path.join(vscodeDir, 'auto-backup.log');
         this.minLevel = 'warn';
+        this.cleanOldLogs();
+    }
+    cleanOldLogs() {
+        try {
+            if (!fs.existsSync(this.logFile)) {
+                return;
+            }
+            const stats = fs.statSync(this.logFile);
+            const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000);
+            if (stats.mtimeMs < twoHoursAgo) {
+                fs.writeFileSync(this.logFile, '');
+            }
+        }
+        catch (error) {
+            console.error('Failed to clean old logs:', error);
+        }
     }
     setLevel(level) {
         this.minLevel = level;

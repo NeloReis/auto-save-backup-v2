@@ -68,6 +68,12 @@ export class AutoBackupManager {
     
     private async saveVersion(): Promise<void> {
         try {
+            // Check if there are actual changes before attempting to save
+            const hasChanges = await this.git.hasChanges();
+            if (!hasChanges) {
+                return; // No changes, skip saving
+            }
+            
             this.statusBar.setSyncing('Saving version…');
             
             const saved = await this.git.saveVersion();
@@ -106,6 +112,15 @@ export class AutoBackupManager {
     
     async syncToCloud(): Promise<void> {
         try {
+            // Check if there are changes to sync
+            const hasChanges = await this.git.hasChanges();
+            if (!hasChanges) {
+                const hasCommitsToSync = await this.git.hasCommitsToSync();
+                if (!hasCommitsToSync) {
+                    return; // Nothing to sync
+                }
+            }
+            
             this.statusBar.setSyncing('Syncing to cloud…');
             
             await this.git.syncToCloud();
@@ -114,7 +129,10 @@ export class AutoBackupManager {
             this.updateStatus();
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            this.logger.log(`Could not reach cloud: ${message}`, 'warn');
+            // Only log if it's not the "already up to date" message
+            if (!message.includes('Everything up-to-date')) {
+                this.logger.log(`Could not reach cloud: ${message}`, 'warn');
+            }
             this.updateStatus();
         }
     }

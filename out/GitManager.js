@@ -106,6 +106,24 @@ class GitManager {
             vscode.window.showErrorMessage('Could not connect to remote. Check your URL and authentication.');
         }
     }
+    async hasChanges() {
+        try {
+            const output = await this.run('git status --porcelain');
+            return output.trim().length > 0;
+        }
+        catch (error) {
+            return false;
+        }
+    }
+    async hasCommitsToSync() {
+        try {
+            const output = await this.run('git log origin/main..HEAD --oneline');
+            return output.trim().length > 0;
+        }
+        catch (error) {
+            return false;
+        }
+    }
     async saveVersion() {
         try {
             await this.run('git add .');

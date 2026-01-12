@@ -23,7 +23,7 @@
     "commands": [
       {
         "command": "autoBackup.openMenu",
-        "title": "Auto Backup: Open Menu"
+        "title": "Auto Backup: Open Menu (View Status, Sync Now, Settings)"
       }
     ],
     "configuration": {
@@ -32,31 +32,31 @@
         "autoBackup.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Enable automatic backup and versioning"
+          "description": "Enable automatic backup and cloud sync. Disable to pause all backup operations."
         },
         "autoBackup.versionInterval": {
           "type": "number",
           "default": 30000,
           "minimum": 5000,
           "maximum": 300000,
-          "description": "Time in milliseconds after last change before saving a version (default: 30 seconds)"
+          "description": "Time in milliseconds after last change before saving a version. Default: 30 seconds (30000ms). Only saves when files actually change."
         },
         "autoBackup.cloudInterval": {
           "type": "number",
           "default": 300000,
           "enum": [60000, 300000, 600000, 1800000],
-          "enumDescriptions": ["1 minute", "5 minutes", "10 minutes", "30 minutes"],
-          "description": "Interval between automatic cloud syncs"
+          "enumDescriptions": ["1 minute", "5 minutes (default)", "10 minutes", "30 minutes"],
+          "description": "How often to automatically sync to your remote repository (cloud backup)"
         },
         "autoBackup.syncMode": {
           "type": "string",
           "default": "auto",
           "enum": ["auto", "manual"],
           "enumDescriptions": [
-            "Automatic: versions and syncs happen automatically",
-            "Manual: versions saved locally, sync only when you click 'Sync now'"
+            "Automatic: Saves versions and syncs to cloud automatically (recommended)",
+            "Manual: Saves versions locally only. Click 'Sync now' to push to cloud."
           ],
-          "description": "Sync mode"
+          "description": "Control how cloud synchronization works"
         },
         "autoBackup.ignorePatterns": {
           "type": "array",
@@ -68,14 +68,14 @@
             ".DS_Store",
             "*.log"
           ],
-          "description": "File patterns to exclude from backup (glob patterns)",
+          "description": "Files and folders to exclude from backup (glob patterns). node_modules is always excluded.",
           "items": { "type": "string" }
         },
         "autoBackup.logLevel": {
           "type": "string",
           "default": "warn",
           "enum": ["debug", "info", "warn", "error"],
-          "description": "Activity log detail level"
+          "description": "Activity log detail level. Use 'debug' for troubleshooting, 'warn' for normal use."
         }
       }
     }

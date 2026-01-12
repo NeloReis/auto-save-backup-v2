@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="icon.png" alt="Auto Backup Logo" width="128" height="128">
+  <img src="https://raw.githubusercontent.com/NeloReis/auto-save-backup-v2/main/icon.png" alt="Auto Backup Logo" width="128" height="128">
   
   # Auto Backup for VS Code
   
@@ -15,30 +15,43 @@
 
 ## 🚀 Overview
 
-Never lose your work again! Auto Backup continuously saves and syncs your code to the cloud without any manual intervention. Your changes are automatically versioned locally and synchronized to your remote repository - all happening silently in the background.
+Never lose your work again! **Auto Backup** continuously saves and syncs your code to the cloud without any manual intervention. Your changes are automatically versioned locally and synchronized to your remote repository - all happening silently in the background.
+
+**Just like Google Sheets** - the extension detects when you make changes and saves them automatically. No more manual commits, no Git commands to remember, just code with confidence knowing everything is safely backed up.
 
 
 ## ✨ Features
 
 - 🔄 **Smart auto-save** - Only saves when you actually change files (just like Google Sheets!)
-- ☁️ **Automatic cloud sync** - Syncs to your remote repository every 5 minutes
+- ☁️ **Automatic cloud sync** - Syncs to your remote repository every 5 minutes  
 - 📡 **Offline support** - Continues working offline, syncs when connection returns
 - 🎯 **Simple UI** - Single status bar indicator with click-to-open menu
 - 💬 **Plain language** - No Git terminology, just simple backup/sync language
 - ⚡ **Non-intrusive** - Works silently in the background, no unnecessary commits
 - 🧹 **Auto-cleaning logs** - Logs older than 2 hours are automatically cleared
+- 🔒 **Secure** - Uses your existing Git credentials and remote repositories
+- ⚙️ **Configurable** - Customize save intervals, ignore patterns, and sync behavior
 
 ---
 
 ## 📦 Installation
 
-### From VSIX File
+### Option 1: From VSIX File
 
 1. Download the latest `.vsix` file from [Releases](https://github.com/NeloReis/auto-save-backup-v2/releases)
-2. In VS Code, run: `code --install-extension auto-backup-1.0.0.vsix`
-3. Reload VS Code
+2. Open VS Code
+3. Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
+4. Type "Extensions: Install from VSIX"
+5. Select the downloaded `auto-backup-1.0.1.vsix` file
+6. Reload VS Code when prompted
 
-### From Source
+### Option 2: From Command Line
+
+```bash
+code --install-extension auto-backup-1.0.1.vsix
+```
+
+### Option 3: Build from Source
 
 ```bash
 git clone https://github.com/NeloReis/auto-save-backup-v2.git
@@ -46,7 +59,7 @@ cd auto-save-backup-v2
 npm install
 npm run compile
 vsce package
-code --install-extension auto-backup-1.0.0.vsix
+code --install-extension auto-backup-1.0.1.vsix
 ```
 
 ---

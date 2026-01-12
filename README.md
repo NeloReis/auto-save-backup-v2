@@ -260,7 +260,7 @@ If you find this extension helpful, please consider:
 - ⭐ Starring the [repository](https://github.com/NeloReis/auto-save-backup-v2)
 - 🐛 Reporting bugs and issues
 - 💡 Suggesting new features
-- 📖 Improving documentation.
+- 📖 Improving documentation
 
 ---
 

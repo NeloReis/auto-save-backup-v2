@@ -1,68 +1,95 @@
-# Auto Backup for VS Code
+<div align="center">
+  <img src="icon.png" alt="Auto Backup Logo" width="128" height="128">
+  
+  # Auto Backup for VS Code
+  
+  **Automatic cloud backup with version history. Works like Google Sheets autosave.**
+  
+  [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/NeloReis/auto-save-backup-v2)
+  [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+  [![VS Code](https://img.shields.io/badge/VS%20Code-1.75.0+-007ACC.svg)](https://code.visualstudio.com/)
+  
+</div>
 
-Automatic cloud backup with version history for your projects. Works like Google Sheets autosave - your changes are continuously saved and synced to the cloud without any manual intervention.
+---
 
-## Features
+## 🚀 Overview
 
-- **Automatic local versioning** - Saves your work every 30 seconds after you stop typing
-- **Automatic cloud sync** - Syncs to your remote repository every 5 minutes
-- **Offline support** - Continues working offline, syncs when connection returns
-- **Simple UI** - Single status bar indicator with click-to-open menu
-- **Zero Git terminology** - Plain language interface, no technical jargon
+Never lose your work again! Auto Backup continuously saves and syncs your code to the cloud without any manual intervention. Your changes are automatically versioned locally and synchronized to your remote repository - all happening silently in the background.
 
-## Getting Started
 
-### 1. Install Dependencies
+## ✨ Features
+
+- 🔄 **Automatic local versioning** - Saves your work every 30 seconds after you stop typing
+- ☁️ **Automatic cloud sync** - Syncs to your remote repository every 5 minutes
+- 📡 **Offline support** - Continues working offline, syncs when connection returns
+- 🎯 **Simple UI** - Single status bar indicator with click-to-open menu
+- 💬 **Plain language** - No Git terminology, just simple backup/sync language
+- ⚡ **Non-intrusive** - Works silently in the background
+
+---
+
+## 📦 Installation
+
+### From VSIX File
+
+1. Download the latest `.vsix` file from [Releases](https://github.com/NeloReis/auto-save-backup-v2/releases)
+2. In VS Code, run: `code --install-extension auto-backup-1.0.0.vsix`
+3. Reload VS Code
+
+### From Source
 
 ```bash
+git clone https://github.com/NeloReis/auto-save-backup-v2.git
+cd auto-save-backup-v2
 npm install
-```
-
-### 2. Compile the Extension
-
-```bash
 npm run compile
+vsce package
+code --install-extension auto-backup-1.0.0.vsix
 ```
 
-Or watch for changes:
+---
 
-```bash
-npm run watch
-```
+## 🎯 Quick Start
 
-### 3. Run in Debug Mode
 
-1. Open this folder in VS Code
-2. Press `F5` to launch the Extension Development Host
-3. Open a workspace/folder in the development window
+### Step 1: Open a Project
 
-### 4. Configure Cloud Backup
+Open any folder or workspace in VS Code. The extension activates automatically.
 
-On first activation, you'll be prompted to connect to a remote repository:
+### Step 2: Configure Cloud Backup
+
+When prompted, connect to a remote repository:
 
 1. Click **"Configure now"** when prompted
 2. Enter your remote repository URL (e.g., `https://github.com/username/repo.git`)
 3. Make sure you have authentication set up (GitHub credentials or SSH keys)
 
-**Note:** You can configure this later by clicking the status bar and selecting "Sync now" if no remote is set up yet.
+**Note:** You can skip this and configure later. Local versioning still works without cloud sync.
 
-## Usage
+### Step 3: Start Coding
 
-### Status Bar States
+That's it! Your changes are now automatically saved and synced. Look for the status indicator in the bottom right of your VS Code window.
 
-The status bar (bottom right) shows your current backup status:
+---
 
-| Indicator | Meaning |
-|-----------|---------|
-| **● Auto backup: Ready** | All changes are saved and synced |
-| **⟳ Auto backup: Syncing…** | Currently saving or syncing changes |
-| **● Auto backup: Offline** | Working offline, will sync when back online |
-| **⚠ Auto backup: Problem** | An error occurred, click for details |
-| **○ Auto backup: Paused** | Auto sync is off, click to sync manually |
+## 📊 Status Bar Indicators
 
-### Menu Options
+The status bar (bottom right corner) shows your current backup status:
 
-Click the status bar indicator to open the menu:
+| Icon | Status | Meaning |
+|------|--------|---------|
+| ● | **Auto backup: Ready** | ✅ All changes are saved and synced |
+| ⟳ | **Auto backup: Syncing…** | 🔄 Currently saving or syncing changes |
+| ● | **Auto backup: Offline** | 📡 Working offline, will sync when back online |
+| ⚠ | **Auto backup: Problem** | ⚠️ An error occurred, click for details |
+| ○ | **Auto backup: Paused** | ⏸️ Auto sync is off, click to sync manually |
+
+---
+
+## 🎛️ Menu Options
+
+Click the status bar indicator to access:
 
 1. **Auto sync: ON/OFF** - Toggle automatic cloud syncing
 2. **View problems and activity** - See detailed activity log
@@ -72,80 +99,150 @@ Click the status bar indicator to open the menu:
 6. **Open settings** - Configure extension settings
 7. **About auto backup** - Version and info
 
-### Configuration
+---
 
-Access settings via the menu or VS Code preferences:
+## ⚙️ Configuration
 
-- **autoBackup.enabled** - Enable/disable the extension
-- **autoBackup.versionInterval** - Time before saving a version (default: 30 seconds)
-- **autoBackup.cloudInterval** - Time between cloud syncs (default: 5 minutes)
-- **autoBackup.syncMode** - Auto or manual sync mode
-- **autoBackup.ignorePatterns** - Files/folders to exclude from backup
-- **autoBackup.logLevel** - Activity log detail level
+Access settings via the menu or VS Code preferences (`autoBackup.*`):
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `autoBackup.enabled` | Enable/disable the extension | `true` |
+| `autoBackup.versionInterval` | Time before saving a version | `30000` ms (30s) |
+| `autoBackup.cloudInterval` | Time between cloud syncs | `300000` ms (5m) |
+| `autoBackup.syncMode` | Auto or manual sync mode | `auto` |
+| `autoBackup.ignorePatterns` | Files/folders to exclude | See below |
+| `autoBackup.logLevel` | Activity log detail level | `warn` |
 
 ### Default Ignored Patterns
 
-By default, these files are excluded from backup:
+```json
+[
+  "node_modules/**",
+  ".env",
+  ".git/**",
+  "*.tmp",
+  ".DS_Store",
+  "*.log"
+]
+```
 
-- `node_modules/**`
-- `.env`
-- `.git/**`
-- `*.tmp`
-- `.DS_Store`
-- `*.log`
+---
 
-You can customize this list in the settings.
+## 🔧 How It Works
 
-## How It Works
+Behind the scenes, the extension uses Git for version control but presents a simplified interface:
 
-The extension uses Git internally for version control but presents a simplified, user-friendly interface:
+1. 📝 **File changes** are detected automatically
+2. ⏱️ **After 30 seconds** of no changes, a local version is saved
+3. ☁️ **Every 5 minutes**, changes are synced to your remote repository
+4. 🤫 **All operations** happen in the background without interrupting your work
 
-1. **File changes** are detected automatically
-2. **After 30 seconds** of no changes, a local version is saved
-3. **Every 5 minutes**, changes are synced to your remote repository
-4. **All operations** happen in the background without interrupting your work
+---
 
-## Troubleshooting
+## 🐛 Troubleshooting
+
+## 🐛 Troubleshooting
 
 ### "Could not reach cloud"
 
-- Check your internet connection
-- Verify your remote repository URL is correct
-- Ensure you have proper authentication (credentials or SSH keys)
+- ✓ Check your internet connection
+- ✓ Verify your remote repository URL is correct
+- ✓ Ensure you have proper authentication (credentials or SSH keys)
 
 ### "Cloud sync needs authentication"
 
-- Set up GitHub authentication (Personal Access Token or SSH)
-- For HTTPS: Use Git Credential Manager or store credentials
-- For SSH: Configure SSH keys in your GitHub account
+- ✓ Set up GitHub authentication (Personal Access Token or SSH)
+- ✓ For HTTPS: Use Git Credential Manager or store credentials
+- ✓ For SSH: Configure SSH keys in your GitHub account
 
 ### Status shows "Problem"
 
-- Click the status bar to view the activity log
-- Check the log for detailed error messages
-- Most issues are related to network or authentication
+- ✓ Click the status bar to view the activity log
+- ✓ Check the log for detailed error messages
+- ✓ Most issues are related to network or authentication
 
-## Building for Production
+---
 
-To create a VSIX package for distribution:
+## 🛠️ Development
+
+### Building from Source
 
 ```bash
-npm install -g @vscode/vsce
+# Clone repository
+git clone https://github.com/NeloReis/auto-save-backup-v2.git
+cd auto-save-backup-v2
+
+# Install dependencies
+npm install
+
+# Compile TypeScript
+npm run compile
+
+# Watch for changes
+npm run watch
+
+# Package extension
 vsce package
 ```
 
-This creates an `.vsix` file you can install or share.
+### Running in Debug Mode
 
-## Requirements
+1. Open the project folder in VS Code
+2. Press `F5` to launch Extension Development Host
+3. Test in the new VS Code window
 
-- VS Code version 1.75.0 or higher
-- Git installed on your system
-- A remote repository (GitHub, GitLab, Bitbucket, etc.)
+---
 
-## License
+## 📋 Requirements
 
-MIT
+- ✅ VS Code version 1.75.0 or higher
+- ✅ Git installed on your system
+- ✅ A remote repository (GitHub, GitLab, Bitbucket, etc.)
 
-## Support
+---
 
-For issues or questions, please open an issue on the [GitHub repository](https://github.com/your-username/vscode-auto-backup).
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details
+
+---
+
+## 👤 Author
+
+**Nelo Reis**
+- GitHub: [@NeloReis](https://github.com/NeloReis)
+- Repository: [auto-save-backup-v2](https://github.com/NeloReis/auto-save-backup-v2)
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## ⭐ Support
+
+If you find this extension helpful, please consider:
+
+- ⭐ Starring the [repository](https://github.com/NeloReis/auto-save-backup-v2)
+- 🐛 Reporting bugs and issues
+- 💡 Suggesting new features
+- 📖 Improving documentation
+
+---
+
+<div align="center">
+  
+  **Made with ❤️ by [Nelo Reis](https://github.com/NeloReis)**
+  
+  [Report Bug](https://github.com/NeloReis/auto-save-backup-v2/issues) · [Request Feature](https://github.com/NeloReis/auto-save-backup-v2/issues)
+
+</div>

@@ -1,15 +1,10 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/NeloReis/auto-save-backup-v2/main/icon.png" alt="Auto Backup Logo" width="128" height="128">
-  
-  # Auto Backup for VS Code
-  
-  **Automatic cloud backup with version history. Works like Google Sheets autosave.**
-  
-  [![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/NeloReis/auto-save-backup-v2)
-  [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-  [![VS Code](https://img.shields.io/badge/VS%20Code-1.75.0+-007ACC.svg)](https://code.visualstudio.com/)
-  
-</div>
+# Auto Backup for VS Code
+
+**Automatic cloud backup with version history. Works like Google Sheets autosave.**
+
+[![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/NeloReis/auto-save-backup-v2)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![VS Code](https://img.shields.io/badge/VS%20Code-1.75.0+-007ACC.svg)](https://code.visualstudio.com/)
 
 ---
 

@@ -2,7 +2,7 @@
   "name": "auto-backup",
   "displayName": "Auto Backup",
   "description": "Automatic cloud backup with version history. Works like Google Sheets autosave.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "NeloReis",
   "author": {
     "name": "Nelo Reis",

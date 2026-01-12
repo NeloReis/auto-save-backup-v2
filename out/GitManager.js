@@ -117,11 +117,21 @@ class GitManager {
     }
     async hasCommitsToSync() {
         try {
-            const output = await this.run('git log origin/main..HEAD --oneline');
-            return output.trim().length > 0;
+            // Check if there are unpushed commits
+            await this.run('git fetch origin --dry-run');
+            const output = await this.run('git rev-list HEAD...origin/main --count');
+            const count = parseInt(output.trim(), 10);
+            return count > 0;
         }
         catch (error) {
-            return false;
+            // If fetch fails or branch doesn't exist, try different approach
+            try {
+                const output = await this.run('git status -sb');
+                return output.includes('[ahead');
+            }
+            catch {
+                return false;
+            }
         }
     }
     async saveVersion() {

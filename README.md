@@ -18,6 +18,7 @@ Never lose your work again! **Auto Backup** continuously saves and syncs your co
 ## ✨ Features
 
 - 🔄 **Smart auto-save** - Only saves when you actually change files (just like Google Sheets!)
+- 📁 **All file types** - Detects changes to text files, binary files, images, everything!
 - ☁️ **Automatic cloud sync** - Syncs to your remote repository every 5 minutes  
 - 📡 **Offline support** - Continues working offline, syncs when connection returns
 - 🎯 **Simple UI** - Single status bar indicator with click-to-open menu
@@ -158,10 +159,11 @@ Behind the scenes, the extension uses Git for version control but presents a sim
 
 ### How It Works Independently
 - Uses its own `autoBackup.*` configuration namespace
-- Watches file changes through VS Code API (doesn't depend on VS Code's auto-save)
+- Watches ALL file changes through VS Code file system watcher (text, binary, images, everything)
 - Manages its own Git operations
 - Runs completely independently of VS Code's built-in Git features
 - **No VS Code settings changes required** - works with default settings!
+- **No background tasks needed** - everything runs inside the extension
 
 ---
 

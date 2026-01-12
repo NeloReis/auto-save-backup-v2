@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Changed
 - ⚡ **Smart auto-save**: Only saves versions when there are actual file changes (true Google Sheets-like behavior)
+- 📁 **All file types**: Now detects changes to ALL files including binary files (.vsix, .png, .pdf, etc.)
 - 🧹 **Auto-cleaning logs**: Log files older than 2 hours are automatically cleared to prevent indefinite growth
 - 🔇 **Reduced log spam**: Eliminated redundant "Everything up-to-date" messages
 - 📊 **Better change detection**: Improved detection of unpushed commits before attempting cloud sync
@@ -20,12 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🐛 Extension no longer creates empty commits when nothing changed
 - 🐛 VS Code settings.json excluded from version control to prevent conflicts
 - 🐛 Log file properly excluded from git tracking
+- 🐛 Binary files now properly detected and backed up
 
 #### Technical
+- Added file system watcher for ALL file types (not just text documents)
 - Implemented `hasChanges()` check before version saves
 - Implemented `hasCommitsToSync()` check before cloud sync
 - Added automatic log rotation after 2 hours
 - Updated `.gitignore` to exclude log and settings files
+- Improved feature descriptions in extension manifest
 
 ---
 

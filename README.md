@@ -149,7 +149,21 @@ Behind the scenes, the extension uses Git for version control but presents a sim
 
 ---
 
-## 🐛 Troubleshooting
+## � Requirements
+
+### What You Need
+- ✅ **Git installed** on your system
+- ✅ **A folder/workspace** open in VS Code
+- ✅ **(Optional)** Remote repository for cloud sync
+
+### How It Works Independently
+- Uses its own `autoBackup.*` configuration namespace
+- Watches file changes through VS Code API (doesn't depend on VS Code's auto-save)
+- Manages its own Git operations
+- Runs completely independently of VS Code's built-in Git features
+- **No VS Code settings changes required** - works with default settings!
+
+---
 
 ## 🐛 Troubleshooting
 

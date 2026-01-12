@@ -49,15 +49,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 📖 Complete documentation and README
 
 #### Features
-- **Automatic Versioning**: Saves your work locally every 30 seconds after you stop typing
-- **Cloud Sync**: Automatically syncs to remote repository at configurable intervals
-- **Offline Mode**: Continues working offline and syncs when connection returns
-- **Status Indicators**: Clear visual feedback in status bar
-- **Activity Log**: Detailed history of all backup operations
+- **Smart Auto-Save**: Only saves when you make actual file changes (true Google Sheets behavior)
+- **Automatic Cloud Sync**: Syncs to remote repository every 5 minutes
+- **Offline Mode**: Works offline and syncs when connection returns
+- **Status Indicators**: Clear visual feedback in status bar with 5 states
+- **Activity Log**: Detailed history with automatic cleanup after 2 hours
 - **Ignore Patterns**: Exclude specific files/folders from backup
-- **Configurable Intervals**: Customize timing for both local saves and cloud syncs
-- **Error Handling**: Graceful error handling with user-friendly messages
-- **Zero Git Knowledge Required**: Plain language interface for all users
+- **Configurable Intervals**: Customize timing for saves and syncs
+- **Zero Configuration**: Works with default VS Code settings
+- **Plain Language**: No Git terminology, user-friendly interface
+- **Error Handling**: Graceful error handling with helpful messages
 
 #### Technical Details
 - Built with TypeScript

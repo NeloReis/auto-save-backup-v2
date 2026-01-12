@@ -5,6 +5,30 @@ All notable changes to the "Auto Backup" extension will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-01-12
+
+### 🚀 Improvements
+
+#### Changed
+- ⚡ **Smart auto-save**: Only saves versions when there are actual file changes (true Google Sheets-like behavior)
+- 🧹 **Auto-cleaning logs**: Log files older than 2 hours are automatically cleared to prevent indefinite growth
+- 🔇 **Reduced log spam**: Eliminated redundant "Everything up-to-date" messages
+- 📊 **Better change detection**: Improved detection of unpushed commits before attempting cloud sync
+
+#### Fixed
+- 🐛 Log file no longer stuck in version control loop
+- 🐛 Extension no longer creates empty commits when nothing changed
+- 🐛 VS Code settings.json excluded from version control to prevent conflicts
+- 🐛 Log file properly excluded from git tracking
+
+#### Technical
+- Implemented `hasChanges()` check before version saves
+- Implemented `hasCommitsToSync()` check before cloud sync
+- Added automatic log rotation after 2 hours
+- Updated `.gitignore` to exclude log and settings files
+
+---
+
 ## [1.0.0] - 2026-01-11
 
 ### 🎉 Initial Release
@@ -74,16 +98,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
+- **1.0.1** (2026-01-12) - Smart auto-save, log management, and bug fixes
 - **1.0.0** (2026-01-11) - Initial release with core functionality
 
 ---
 
-## Links
-
-- [GitHub Repository](https://github.com/NeloReis/auto-save-backup-v2)
-- [Issue Tracker](https://github.com/NeloReis/auto-save-backup-v2/issues)
-- [Releases](https://github.com/NeloReis/auto-save-backup-v2/releases)
-
----
-
-**Note**: This extension is actively maintained. Please report any issues or feature requests on GitHub!
+**Note**: This extension is actively maintained. Please report any issues or feature requests on [GitHub](https://github.com/NeloReis/auto-save-backup-v2/issues).

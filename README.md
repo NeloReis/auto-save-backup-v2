@@ -5,7 +5,7 @@
   
   **Automatic cloud backup with version history. Works like Google Sheets autosave.**
   
-  [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/NeloReis/auto-save-backup-v2)
+  [![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/NeloReis/auto-save-backup-v2)
   [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
   [![VS Code](https://img.shields.io/badge/VS%20Code-1.75.0+-007ACC.svg)](https://code.visualstudio.com/)
   
@@ -20,12 +20,13 @@ Never lose your work again! Auto Backup continuously saves and syncs your code t
 
 ## ✨ Features
 
-- 🔄 **Automatic local versioning** - Saves your work every 30 seconds after you stop typing
+- 🔄 **Smart auto-save** - Only saves when you actually change files (just like Google Sheets!)
 - ☁️ **Automatic cloud sync** - Syncs to your remote repository every 5 minutes
 - 📡 **Offline support** - Continues working offline, syncs when connection returns
 - 🎯 **Simple UI** - Single status bar indicator with click-to-open menu
 - 💬 **Plain language** - No Git terminology, just simple backup/sync language
-- ⚡ **Non-intrusive** - Works silently in the background
+- ⚡ **Non-intrusive** - Works silently in the background, no unnecessary commits
+- 🧹 **Auto-cleaning logs** - Logs older than 2 hours are automatically cleared
 
 ---
 

@@ -241,7 +241,7 @@ If you find this extension helpful, please consider:
 
 <div align="center">
   
-  **Made with ❤️ by [Nelo Reis](https://github.com/NeloReis)**
+  **Made with ❤️ by [Nelo Reis .](https://github.com/NeloReis)**
   
   [Report Bug](https://github.com/NeloReis/auto-save-backup-v2/issues) · [Request Feature](https://github.com/NeloReis/auto-save-backup-v2/issues)
 

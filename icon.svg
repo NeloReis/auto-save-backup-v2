@@ -1,18 +1,18 @@
 <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Cloud shape -->
-  <path d="M96 52C96 38.7452 85.2548 28 72 28C70.0118 28 68.0851 28.2641 66.2571 28.7578C62.4428 20.4844 53.9645 15 44 15C30.7452 15 20 25.7452 20 39C20 40.1712 20.0955 41.3197 20.2793 42.4382C13.2256 45.5679 8 52.5544 8 60.7619C8 71.6842 16.8158 80.5 27.7381 80.5H94C104.493 80.5 113 72.0228 113 61.5C113 51.2273 104.929 43 96 52Z" fill="#4EC9B0"/>
+  <path d="M96 52C96 38.7452 85.2548 28 72 28C70.0118 28 68.0851 28.2641 66.2571 28.7578C62.4428 20.4844 53.9645 15 44 15C30.7452 15 20 25.7452 20 39C20 40.1712 20.0955 41.3197 20.2793 42.4382C13.2256 45.5679 8 52.5544 8 60.7619C8 71.6842 16.8158 80.5 27.7381 80.5H94C104.493 80.5 113 72.0228 113 61.5C113 51.2273 104.929 43 96 52Z" fill="#4A9EFF"/>
   
   <!-- Document/File icon inside cloud -->
   <rect x="38" y="40" width="52" height="64" rx="4" fill="white"/>
-  <rect x="38" y="40" width="52" height="12" rx="4" fill="#DCDCAA"/>
+  <rect x="38" y="40" width="52" height="12" rx="4" fill="#66B3FF"/>
   
   <!-- Lines representing text -->
-  <line x1="46" y1="60" x2="74" y2="60" stroke="#4EC9B0" stroke-width="2" stroke-linecap="round"/>
-  <line x1="46" y1="68" x2="82" y2="68" stroke="#4EC9B0" stroke-width="2" stroke-linecap="round"/>
-  <line x1="46" y1="76" x2="70" y2="76" stroke="#4EC9B0" stroke-width="2" stroke-linecap="round"/>
-  <line x1="46" y1="84" x2="78" y2="84" stroke="#4EC9B0" stroke-width="2" stroke-linecap="round"/>
+  <line x1="46" y1="60" x2="74" y2="60" stroke="#4A9EFF" stroke-width="2" stroke-linecap="round"/>
+  <line x1="46" y1="68" x2="82" y2="68" stroke="#4A9EFF" stroke-width="2" stroke-linecap="round"/>
+  <line x1="46" y1="76" x2="70" y2="76" stroke="#4A9EFF" stroke-width="2" stroke-linecap="round"/>
+  <line x1="46" y1="84" x2="78" y2="84" stroke="#4A9EFF" stroke-width="2" stroke-linecap="round"/>
   
   <!-- Checkmark overlay (saved indicator) -->
-  <circle cx="88" cy="88" r="16" fill="#4EC9B0"/>
+  <circle cx="88" cy="88" r="16" fill="#2E86DE"/>
   <path d="M82 88L86 92L94 84" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

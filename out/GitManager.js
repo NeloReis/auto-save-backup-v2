@@ -124,12 +124,12 @@ class GitManager {
                 }
                 catch (pushError) {
                     const pushMessage = pushError instanceof Error ? pushError.message : String(pushError);
-                    this.logger.log(`Remote configured but push failed: ${pushMessage}`, 'warning');
+                    this.logger.log(`Remote configured but push failed: ${pushMessage}`, 'warn');
                     vscode.window.showWarningMessage('Remote configured, but initial push failed. Will retry on next save.');
                 }
             }
             else {
-                this.logger.log('Remote configured but no initial commit could be created', 'warning');
+                this.logger.log('Remote configured but no initial commit could be created', 'warn');
                 vscode.window.showWarningMessage('Remote configured. Initial sync will happen on next save.');
             }
         }

@@ -89,16 +89,49 @@ class GitManager {
         try {
             await this.run(`git remote add origin "${url}"`);
             await this.run('git branch -M main');
+            // Track whether we successfully created a commit
+            let commitCreated = false;
             try {
                 await this.run('git add .');
                 await this.run('git commit -m "Initial backup"');
+                commitCreated = true;
             }
             catch (error) {
-                // Ignore if nothing to commit
+                const message = error instanceof Error ? error.message : String(error);
+                // If nothing to commit, create an empty commit
+                if (message.includes('nothing to commit') || message.includes('nothing added to commit')) {
+                    try {
+                        await this.run('git commit --allow-empty -m "Initial commit"');
+                        commitCreated = true;
+                        this.logger.log('Created empty initial commit', 'info');
+                    }
+                    catch (emptyCommitError) {
+                        const emptyMessage = emptyCommitError instanceof Error ? emptyCommitError.message : String(emptyCommitError);
+                        this.logger.log(`Could not create empty commit: ${emptyMessage}`, 'error');
+                    }
+                }
+                else {
+                    // Re-throw if it's a different error
+                    throw error;
+                }
             }
-            await this.run('git push -u origin main --force');
-            this.logger.log('Cloud backup configured successfully', 'info');
-            vscode.window.showInformationMessage('Cloud backup configured!');
+            // Only push if we successfully created a commit
+            if (commitCreated) {
+                try {
+                    await this.run('git push -u origin main --force');
+                    this.logger.log('Cloud backup configured successfully', 'info');
+                    vscode.window.showInformationMessage('Cloud backup configured!');
+                }
+                catch (pushError) {
+                    const pushMessage = pushError instanceof Error ? pushError.message : String(pushError);
+                    this.logger.log(`Remote configured but push failed: ${pushMessage}`, 'warning');
+                    vscode.window.showWarningMessage('Remote configured, but initial push failed. Will retry on next save.');
+                }
+            }
+            else {
+                this.logger.log('Remote configured but no initial commit could be created', 'warning');
+                vscode.window.showWarningMessage('Remote configured. Initial sync will happen on next save.');
+            }
         }
         catch (error) {
             const message = error instanceof Error ? error.message : String(error);

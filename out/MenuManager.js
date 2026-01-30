@@ -49,19 +49,19 @@ class MenuManager {
                 label: isAuto ? '$(check) Auto sync: ON' : '○ Auto sync: OFF',
                 id: 'toggle'
             },
-            { label: '────────────', id: 'sep1' },
+            { label: '', kind: vscode.QuickPickItemKind.Separator },
             { label: '$(eye) View problems and activity', id: 'logs' },
             { label: '$(trash) Clear activity history', id: 'clear' },
             { label: '$(settings-gear) Configure ignored items', id: 'ignore' },
             { label: '$(sync) Sync now', id: 'sync' },
-            { label: '────────────', id: 'sep2' },
+            { label: '', kind: vscode.QuickPickItemKind.Separator },
             { label: '$(gear) Open settings', id: 'settings' },
             { label: '$(info) About auto backup', id: 'about' }
         ];
         const choice = await vscode.window.showQuickPick(items, {
             placeHolder: 'Auto Backup'
         });
-        if (!choice) {
+        if (!choice || !('id' in choice) || !choice.id) {
             return;
         }
         switch (choice.id) {

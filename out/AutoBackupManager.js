@@ -47,25 +47,21 @@ class AutoBackupManager {
         this.cloudSyncTimer = null;
         this.onlineCheckTimer = null;
         this.isOnline = true;
+        this.enabled = true;
         this.fileWatcherDisposable = null;
         this.fileSystemWatcher = null;
         this.configChangeDisposable = null;
     }
     async start() {
-        const enabled = this.config.get('autoBackup.enabled');
-        if (!enabled) {
-            this.statusBar.setPaused('Auto backup is disabled');
+        this.configChangeDisposable = this.config.onDidChange(() => {
+            void this.restart();
+        });
+        await this.applyConfiguration();
+    }
+    ensureFileWatcher() {
+        if (this.fileWatcherDisposable || this.fileSystemWatcher) {
             return;
         }
-        const logLevel = this.config.get('autoBackup.logLevel');
-        this.logger.setLevel(logLevel);
-        this.startFileWatcher();
-        this.startCloudSyncTimer();
-        this.startOnlineDetection();
-        this.configChangeDisposable = this.config.onDidChange(() => this.restart());
-        this.updateStatus();
-    }
-    startFileWatcher() {
         // Watch text document changes
         this.fileWatcherDisposable = vscode.workspace.onDidChangeTextDocument((event) => {
             if (this.shouldIgnore(event.document.uri.fsPath)) {
@@ -96,7 +92,34 @@ class AutoBackupManager {
             }
         });
     }
+    disposeFileWatcher() {
+        if (this.fileWatcherDisposable) {
+            this.fileWatcherDisposable.dispose();
+            this.fileWatcherDisposable = null;
+        }
+        if (this.fileSystemWatcher) {
+            this.fileSystemWatcher.dispose();
+            this.fileSystemWatcher = null;
+        }
+    }
+    clearTimers() {
+        if (this.versionDebounceTimer) {
+            clearTimeout(this.versionDebounceTimer);
+            this.versionDebounceTimer = null;
+        }
+        if (this.cloudSyncTimer) {
+            clearInterval(this.cloudSyncTimer);
+            this.cloudSyncTimer = null;
+        }
+        if (this.onlineCheckTimer) {
+            clearInterval(this.onlineCheckTimer);
+            this.onlineCheckTimer = null;
+        }
+    }
     resetVersionDebounce() {
+        if (!this.enabled) {
+            return;
+        }
         if (this.versionDebounceTimer) {
             clearTimeout(this.versionDebounceTimer);
         }
@@ -107,6 +130,9 @@ class AutoBackupManager {
     }
     async saveVersion() {
         try {
+            if (!this.enabled) {
+                return;
+            }
             // Check if there are actual changes before attempting to save
             const hasChanges = await this.git.hasChanges();
             if (!hasChanges) {
@@ -131,6 +157,9 @@ class AutoBackupManager {
         }
         const interval = this.config.get('autoBackup.cloudInterval');
         this.cloudSyncTimer = setInterval(async () => {
+            if (!this.enabled) {
+                return;
+            }
             const mode = this.config.get('autoBackup.syncMode');
             if (mode !== 'auto') {
                 return;
@@ -138,11 +167,22 @@ class AutoBackupManager {
             if (!this.isOnline) {
                 return;
             }
+            const hasRemote = await this.git.hasRemote();
+            if (!hasRemote) {
+                return;
+            }
             await this.syncToCloud();
         }, interval);
     }
     async syncToCloud() {
         try {
+            if (!this.enabled) {
+                return;
+            }
+            const hasRemote = await this.git.hasRemote();
+            if (!hasRemote) {
+                return;
+            }
             // Check if there are changes to sync
             const hasChanges = await this.git.hasChanges();
             if (!hasChanges) {
@@ -171,6 +211,14 @@ class AutoBackupManager {
         }
         this.onlineCheckTimer = setInterval(async () => {
             try {
+                const hasRemote = await this.git.hasRemote();
+                if (!hasRemote) {
+                    if (!this.isOnline) {
+                        this.isOnline = true;
+                        this.updateStatus();
+                    }
+                    return;
+                }
                 await this.git.checkOnline();
                 if (!this.isOnline) {
                     this.isOnline = true;
@@ -189,6 +237,10 @@ class AutoBackupManager {
         }, 10000);
     }
     updateStatus() {
+        if (!this.enabled) {
+            this.statusBar.setPaused('Auto backup is disabled');
+            return;
+        }
         const mode = this.config.get('autoBackup.syncMode');
         if (mode === 'manual') {
             this.statusBar.setPaused();
@@ -207,47 +259,36 @@ class AutoBackupManager {
             return (0, minimatch_1.minimatch)(relative, pattern, { dot: true });
         });
     }
-    restart() {
-        if (this.versionDebounceTimer) {
-            clearTimeout(this.versionDebounceTimer);
-        }
-        if (this.cloudSyncTimer) {
-            clearInterval(this.cloudSyncTimer);
-        }
-        if (this.onlineCheckTimer) {
-            clearInterval(this.onlineCheckTimer);
-        }
+    async restart() {
+        await this.applyConfiguration();
+    }
+    async applyConfiguration() {
         const enabled = this.config.get('autoBackup.enabled');
+        this.enabled = enabled;
         if (!enabled) {
+            this.isOnline = true;
+            this.clearTimers();
+            this.disposeFileWatcher();
             this.statusBar.setPaused('Auto backup is disabled');
             return;
         }
         const logLevel = this.config.get('autoBackup.logLevel');
         this.logger.setLevel(logLevel);
+        this.ensureFileWatcher();
         this.startCloudSyncTimer();
         this.startOnlineDetection();
         this.updateStatus();
     }
     async forceSyncNow() {
+        if (!this.enabled) {
+            return;
+        }
         await this.saveVersion();
         await this.syncToCloud();
     }
     dispose() {
-        if (this.versionDebounceTimer) {
-            clearTimeout(this.versionDebounceTimer);
-        }
-        if (this.cloudSyncTimer) {
-            clearInterval(this.cloudSyncTimer);
-        }
-        if (this.onlineCheckTimer) {
-            clearInterval(this.onlineCheckTimer);
-        }
-        if (this.fileWatcherDisposable) {
-            this.fileWatcherDisposable.dispose();
-        }
-        if (this.fileSystemWatcher) {
-            this.fileSystemWatcher.dispose();
-        }
+        this.clearTimers();
+        this.disposeFileWatcher();
         if (this.configChangeDisposable) {
             this.configChangeDisposable.dispose();
         }

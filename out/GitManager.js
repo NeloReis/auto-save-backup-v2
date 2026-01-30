@@ -148,19 +148,36 @@ class GitManager {
             return false;
         }
     }
+    async hasRemote() {
+        try {
+            await this.run('git remote get-url origin');
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
+    async hasUpstream() {
+        try {
+            await this.run('git rev-parse --abbrev-ref --symbolic-full-name @{u}');
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
     async hasCommitsToSync() {
         try {
-            // Check if there are unpushed commits
-            await this.run('git fetch origin --dry-run');
-            const output = await this.run('git rev-list HEAD...origin/main --count');
-            const count = parseInt(output.trim(), 10);
+            // Count commits ahead of upstream
+            const output = await this.run('git rev-list @{u}..HEAD --count');
+            const count = parseInt(output.trim() || '0', 10);
             return count > 0;
         }
         catch (error) {
             // If fetch fails or branch doesn't exist, try different approach
             try {
                 const output = await this.run('git status -sb');
-                return output.includes('[ahead');
+                return output.includes('ahead');
             }
             catch {
                 return false;
@@ -183,7 +200,16 @@ class GitManager {
         }
     }
     async syncToCloud() {
-        await this.run('git push');
+        const hasRemote = await this.hasRemote();
+        if (!hasRemote) {
+            throw new Error('No remote configured');
+        }
+        const hasUpstream = await this.hasUpstream();
+        if (hasUpstream) {
+            await this.run('git push');
+            return;
+        }
+        await this.run('git push -u origin HEAD');
     }
     async checkOnline() {
         await this.run('git ls-remote origin', 5000);
@@ -194,13 +220,7 @@ class GitManager {
                 cwd: this.workspaceRoot,
                 timeout
             });
-            if (stderr &&
-                !stderr.includes('Already up to date') &&
-                !stderr.includes('already exists') &&
-                !stderr.toLowerCase().includes('warning')) {
-                throw new Error(stderr);
-            }
-            return stdout;
+            return stdout || stderr || '';
         }
         catch (error) {
             if (error instanceof Error) {

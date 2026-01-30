@@ -50,21 +50,21 @@ async function activate(context) {
         vscode.window.showErrorMessage('Auto Backup requires an open folder');
         return;
     }
+    const logger = new Logger_1.Logger(workspaceRoot);
+    const config = new ConfigManager_1.ConfigManager();
+    statusBar = new StatusBarManager_1.StatusBarManager();
+    const git = new GitManager_1.GitManager(workspaceRoot, logger);
+    autoBackup = new AutoBackupManager_1.AutoBackupManager(git, statusBar, logger, config);
+    const menu = new MenuManager_1.MenuManager(autoBackup, logger, config);
+    const openMenuCommand = vscode.commands.registerCommand('autoBackup.openMenu', () => menu.show());
+    context.subscriptions.push(openMenuCommand);
+    context.subscriptions.push(statusBar);
+    context.subscriptions.push({
+        dispose: () => autoBackup?.dispose()
+    });
     try {
-        const logger = new Logger_1.Logger(workspaceRoot);
-        const config = new ConfigManager_1.ConfigManager();
-        statusBar = new StatusBarManager_1.StatusBarManager();
-        const git = new GitManager_1.GitManager(workspaceRoot, logger);
-        autoBackup = new AutoBackupManager_1.AutoBackupManager(git, statusBar, logger, config);
-        const menu = new MenuManager_1.MenuManager(autoBackup, logger, config);
         await git.initialize(context.workspaceState);
         await autoBackup.start();
-        const openMenuCommand = vscode.commands.registerCommand('autoBackup.openMenu', () => menu.show());
-        context.subscriptions.push(openMenuCommand);
-        context.subscriptions.push(statusBar);
-        context.subscriptions.push({
-            dispose: () => autoBackup?.dispose()
-        });
         logger.log('Auto Backup activated', 'info');
     }
     catch (error) {

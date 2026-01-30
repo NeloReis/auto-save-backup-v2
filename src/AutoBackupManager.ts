@@ -11,6 +11,7 @@ export class AutoBackupManager {
     private cloudSyncTimer: NodeJS.Timeout | null = null;
     private onlineCheckTimer: NodeJS.Timeout | null = null;
     private isOnline = true;
+    private enabled = true;
     private fileWatcherDisposable: vscode.Disposable | null = null;
     private fileSystemWatcher: vscode.FileSystemWatcher | null = null;
     private configChangeDisposable: vscode.Disposable | null = null;
@@ -23,25 +24,18 @@ export class AutoBackupManager {
     ) {}
     
     async start(): Promise<void> {
-        const enabled = this.config.get<boolean>('autoBackup.enabled');
-        if (!enabled) {
-            this.statusBar.setPaused('Auto backup is disabled');
+        this.configChangeDisposable = this.config.onDidChange(() => {
+            void this.restart();
+        });
+        
+        await this.applyConfiguration();
+    }
+    
+    private ensureFileWatcher(): void {
+        if (this.fileWatcherDisposable || this.fileSystemWatcher) {
             return;
         }
         
-        const logLevel = this.config.get<string>('autoBackup.logLevel') as 'debug' | 'info' | 'warn' | 'error';
-        this.logger.setLevel(logLevel);
-        
-        this.startFileWatcher();
-        this.startCloudSyncTimer();
-        this.startOnlineDetection();
-        
-        this.configChangeDisposable = this.config.onDidChange(() => this.restart());
-        
-        this.updateStatus();
-    }
-    
-    private startFileWatcher(): void {
         // Watch text document changes
         this.fileWatcherDisposable = vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) => {
             if (this.shouldIgnore(event.document.uri.fsPath)) {
@@ -79,7 +73,37 @@ export class AutoBackupManager {
         });
     }
     
+    private disposeFileWatcher(): void {
+        if (this.fileWatcherDisposable) {
+            this.fileWatcherDisposable.dispose();
+            this.fileWatcherDisposable = null;
+        }
+        if (this.fileSystemWatcher) {
+            this.fileSystemWatcher.dispose();
+            this.fileSystemWatcher = null;
+        }
+    }
+    
+    private clearTimers(): void {
+        if (this.versionDebounceTimer) {
+            clearTimeout(this.versionDebounceTimer);
+            this.versionDebounceTimer = null;
+        }
+        if (this.cloudSyncTimer) {
+            clearInterval(this.cloudSyncTimer);
+            this.cloudSyncTimer = null;
+        }
+        if (this.onlineCheckTimer) {
+            clearInterval(this.onlineCheckTimer);
+            this.onlineCheckTimer = null;
+        }
+    }
+    
     private resetVersionDebounce(): void {
+        if (!this.enabled) {
+            return;
+        }
+        
         if (this.versionDebounceTimer) {
             clearTimeout(this.versionDebounceTimer);
         }
@@ -93,6 +117,10 @@ export class AutoBackupManager {
     
     private async saveVersion(): Promise<void> {
         try {
+            if (!this.enabled) {
+                return;
+            }
+            
             // Check if there are actual changes before attempting to save
             const hasChanges = await this.git.hasChanges();
             if (!hasChanges) {
@@ -123,11 +151,20 @@ export class AutoBackupManager {
         const interval = this.config.get<number>('autoBackup.cloudInterval');
         
         this.cloudSyncTimer = setInterval(async () => {
+            if (!this.enabled) {
+                return;
+            }
+            
             const mode = this.config.get<string>('autoBackup.syncMode');
             if (mode !== 'auto') {
                 return;
             }
             if (!this.isOnline) {
+                return;
+            }
+            
+            const hasRemote = await this.git.hasRemote();
+            if (!hasRemote) {
                 return;
             }
             
@@ -137,6 +174,15 @@ export class AutoBackupManager {
     
     async syncToCloud(): Promise<void> {
         try {
+            if (!this.enabled) {
+                return;
+            }
+            
+            const hasRemote = await this.git.hasRemote();
+            if (!hasRemote) {
+                return;
+            }
+            
             // Check if there are changes to sync
             const hasChanges = await this.git.hasChanges();
             if (!hasChanges) {
@@ -169,6 +215,15 @@ export class AutoBackupManager {
         
         this.onlineCheckTimer = setInterval(async () => {
             try {
+                const hasRemote = await this.git.hasRemote();
+                if (!hasRemote) {
+                    if (!this.isOnline) {
+                        this.isOnline = true;
+                        this.updateStatus();
+                    }
+                    return;
+                }
+                
                 await this.git.checkOnline();
                 
                 if (!this.isOnline) {
@@ -188,6 +243,11 @@ export class AutoBackupManager {
     }
     
     private updateStatus(): void {
+        if (!this.enabled) {
+            this.statusBar.setPaused('Auto backup is disabled');
+            return;
+        }
+        
         const mode = this.config.get<string>('autoBackup.syncMode');
         
         if (mode === 'manual') {
@@ -208,19 +268,18 @@ export class AutoBackupManager {
         });
     }
     
-    private restart(): void {
-        if (this.versionDebounceTimer) {
-            clearTimeout(this.versionDebounceTimer);
-        }
-        if (this.cloudSyncTimer) {
-            clearInterval(this.cloudSyncTimer);
-        }
-        if (this.onlineCheckTimer) {
-            clearInterval(this.onlineCheckTimer);
-        }
-        
+    private async restart(): Promise<void> {
+        await this.applyConfiguration();
+    }
+    
+    private async applyConfiguration(): Promise<void> {
         const enabled = this.config.get<boolean>('autoBackup.enabled');
+        this.enabled = enabled;
+        
         if (!enabled) {
+            this.isOnline = true;
+            this.clearTimers();
+            this.disposeFileWatcher();
             this.statusBar.setPaused('Auto backup is disabled');
             return;
         }
@@ -228,32 +287,23 @@ export class AutoBackupManager {
         const logLevel = this.config.get<string>('autoBackup.logLevel') as 'debug' | 'info' | 'warn' | 'error';
         this.logger.setLevel(logLevel);
         
+        this.ensureFileWatcher();
         this.startCloudSyncTimer();
         this.startOnlineDetection();
         this.updateStatus();
     }
     
     async forceSyncNow(): Promise<void> {
+        if (!this.enabled) {
+            return;
+        }
         await this.saveVersion();
         await this.syncToCloud();
     }
     
     dispose(): void {
-        if (this.versionDebounceTimer) {
-            clearTimeout(this.versionDebounceTimer);
-        }
-        if (this.cloudSyncTimer) {
-            clearInterval(this.cloudSyncTimer);
-        }
-        if (this.onlineCheckTimer) {
-            clearInterval(this.onlineCheckTimer);
-        }
-        if (this.fileWatcherDisposable) {
-            this.fileWatcherDisposable.dispose();
-        }
-        if (this.fileSystemWatcher) {
-            this.fileSystemWatcher.dispose();
-        }
+        this.clearTimers();
+        this.disposeFileWatcher();
         if (this.configChangeDisposable) {
             this.configChangeDisposable.dispose();
         }

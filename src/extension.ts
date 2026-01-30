@@ -17,26 +17,26 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         return;
     }
     
+    const logger = new Logger(workspaceRoot);
+    const config = new ConfigManager();
+    statusBar = new StatusBarManager();
+    const git = new GitManager(workspaceRoot, logger);
+    autoBackup = new AutoBackupManager(git, statusBar, logger, config);
+    const menu = new MenuManager(autoBackup, logger, config);
+    
+    const openMenuCommand = vscode.commands.registerCommand('autoBackup.openMenu', () => 
+        menu.show()
+    );
+    
+    context.subscriptions.push(openMenuCommand);
+    context.subscriptions.push(statusBar);
+    context.subscriptions.push({
+        dispose: () => autoBackup?.dispose()
+    });
+    
     try {
-        const logger = new Logger(workspaceRoot);
-        const config = new ConfigManager();
-        statusBar = new StatusBarManager();
-        const git = new GitManager(workspaceRoot, logger);
-        autoBackup = new AutoBackupManager(git, statusBar, logger, config);
-        const menu = new MenuManager(autoBackup, logger, config);
-        
         await git.initialize(context.workspaceState);
         await autoBackup.start();
-        
-        const openMenuCommand = vscode.commands.registerCommand('autoBackup.openMenu', () => 
-            menu.show()
-        );
-        
-        context.subscriptions.push(openMenuCommand);
-        context.subscriptions.push(statusBar);
-        context.subscriptions.push({
-            dispose: () => autoBackup?.dispose()
-        });
         
         logger.log('Auto Backup activated', 'info');
     } catch (error: unknown) {
